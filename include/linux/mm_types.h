@@ -341,6 +341,9 @@ struct vm_area_struct {
 	seqcount_t vm_sequence;
 #endif
 	struct rcu_head vm_rcu_head;
+	bool is_fastmap;
+	void *pvd; /* struct pr_vma_data */
+	void *pve; /* struct pr_vma_entry */
 } __randomize_layout;
 
 struct core_thread {

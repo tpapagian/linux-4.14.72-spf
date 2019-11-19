@@ -222,6 +222,7 @@ next_pte:
 		}
 	}
 }
+EXPORT_SYMBOL(page_vma_mapped_walk);
 
 /**
  * page_mapped_in_vma - check whether a page is really mapped in a VMA
