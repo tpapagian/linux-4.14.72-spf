@@ -1336,7 +1336,7 @@ __do_page_fault(struct pt_regs *regs, unsigned long error_code,
 		flags |= FAULT_FLAG_INSTRUCTION;
 
 #ifdef CONFIG_SPF
-	if (error_code & PF_USER) {
+	if (error_code & X86_PF_USER) {
 		fault = handle_speculative_fault(mm, address, flags);
 
 		/*
