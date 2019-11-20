@@ -4079,7 +4079,10 @@ static int handle_pte_fault(struct vm_fault *vmf)
 		if (vma_is_anonymous(vmf->vma))
 			return do_anonymous_page(vmf);
 		else if (vmf->flags & FAULT_FLAG_SPECULATIVE)
-			return VM_FAULT_RETRY;
+			if (vmf->vma->is_fastmap)
+				return do_fault(vmf);
+			else
+				return VM_FAULT_RETRY;
 		else
 			return do_fault(vmf);
 	}
@@ -4269,7 +4272,7 @@ int handle_speculative_fault(struct mm_struct *mm, unsigned long address,
 	 * with the VMA.
 	 * This include huge page from hugetlbfs.
 	 */
-	if (vma->vm_ops) {
+	if (vma->vm_ops && !vma->is_fastmap) {
 		trace_spf_vma_notsup(_RET_IP_, vma, address);
 		goto unlock;
 	}
@@ -4279,7 +4282,7 @@ int handle_speculative_fault(struct mm_struct *mm, unsigned long address,
 	 * because vm_next and vm_prev must be safe. This can't be guaranteed
 	 * in the speculative path.
 	 */
-	if (unlikely(!vma->anon_vma)) {
+	if (!vma->anon_vma && !vma->is_fastmap) {
 		trace_spf_vma_notsup(_RET_IP_, vma, address);
 		goto unlock;
 	}
