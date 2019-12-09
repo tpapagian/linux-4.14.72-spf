@@ -291,6 +291,7 @@ unsigned long change_protection(struct vm_area_struct *vma, unsigned long start,
 
 	return pages;
 }
+EXPORT_SYMBOL(change_protection);
 
 static int prot_none_pte_entry(pte_t *pte, unsigned long addr,
 			       unsigned long next, struct mm_walk *walk)
@@ -340,7 +341,7 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
 	int error;
 	int dirty_accountable = 0;
 
-	if (newflags == oldflags) {
+	if (newflags == oldflags && vma->original_write == 0) {
 		*pprev = vma;
 		return 0;
 	}
@@ -416,6 +417,16 @@ success:
 
 	change_protection(vma, start, end, vma->vm_page_prot,
 			  dirty_accountable, 0);
+
+	/* Update NOVA vma list */
+	if (vma->vm_ops && vma->vm_ops->dax_cow) {
+		if (!(oldflags & VM_WRITE) && (newflags & VM_WRITE)) {
+			vma->vm_ops->open(vma);
+		} else if (!(newflags & VM_WRITE)) {
+			if (vma->original_write || (oldflags & VM_WRITE))
+				vma->vm_ops->close(vma);
+		}
+	}
 
 	/*
 	 * Private VM_LOCKED VMA becoming writable: trigger COW to avoid major

@@ -941,6 +941,24 @@ static sector_t dax_iomap_sector(struct iomap *iomap, loff_t pos)
 	return iomap->blkno + (((pos & PAGE_MASK) - iomap->offset) >> 9);
 }
 
+static inline void wprotect_disable(void)
+{
+	unsigned long cr0_val;
+
+	cr0_val = read_cr0();
+	cr0_val &= (~X86_CR0_WP);
+	write_cr0(cr0_val);
+}
+
+static inline void wprotect_enable(void)
+{
+	unsigned long cr0_val;
+
+	cr0_val = read_cr0();
+	cr0_val |= X86_CR0_WP;
+	write_cr0(cr0_val);
+}
+
 static loff_t
 dax_iomap_actor(struct inode *inode, loff_t pos, loff_t length, void *data,
 		struct iomap *iomap)
@@ -1012,10 +1030,12 @@ dax_iomap_actor(struct inode *inode, loff_t pos, loff_t length, void *data,
 		 * validated via access_ok() in either vfs_read() or
 		 * vfs_write(), depending on which operation we are doing.
 		 */
-		if (iov_iter_rw(iter) == WRITE)
+		if (iov_iter_rw(iter) == WRITE) {
+			//wprotect_disable();
 			map_len = dax_copy_from_iter(dax_dev, pgoff, kaddr,
 					map_len, iter);
-		else
+			//wprotect_enable();
+		} else
 			map_len = copy_to_iter(kaddr, map_len, iter);
 		if (map_len <= 0) {
 			ret = map_len ? map_len : -EFAULT;

@@ -186,6 +186,8 @@ extern void __iomem *ioremap_uc(resource_size_t offset, unsigned long size);
 
 extern void __iomem *ioremap_cache(resource_size_t offset, unsigned long size);
 #define ioremap_cache ioremap_cache
+extern void __iomem *ioremap_cache_ro(resource_size_t offset, unsigned long size);
+#define ioremap_cache_ro ioremap_cache_ro
 extern void __iomem *ioremap_prot(resource_size_t offset, unsigned long size, unsigned long prot_val);
 #define ioremap_prot ioremap_prot
 
