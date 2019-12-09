@@ -1401,7 +1401,7 @@ retry:
 	 * we can handle it..
 	 */
 good_area:
-	if (error_code & PF_WRITE) {
+	if (error_code & X86_PF_WRITE) {
 		/* write, present and write, not present: */
 		if (vma->original_write && vma->vm_ops && vma->vm_ops->dax_cow) {
 			up_read(&mm->mmap_sem);
