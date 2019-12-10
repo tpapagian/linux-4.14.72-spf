@@ -654,6 +654,9 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
 			goto fail_nomem;
 		*tmp = *mpnt;
 		INIT_LIST_HEAD(&tmp->anon_vma_chain);
+		tmp->is_fastmap = false;
+		tmp->pve = NULL;
+		tmp->pvd = NULL;
 		retval = vma_dup_policy(mpnt, tmp);
 		if (retval)
 			goto fail_nomem_policy;
