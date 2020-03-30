@@ -337,6 +337,9 @@ struct vm_area_struct {
 	struct mempolicy *vm_policy;	/* NUMA policy for the VMA */
 #endif
 	struct vm_userfaultfd_ctx vm_userfaultfd_ctx;
+	bool is_fastmap;
+	void *pvd; /* struct pr_vma_data */
+	void *pve; /* struct pr_vma_entry */
 } __randomize_layout;
 
 struct core_thread {

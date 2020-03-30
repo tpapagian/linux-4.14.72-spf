@@ -912,7 +912,7 @@ static int wake_page_function(wait_queue_entry_t *wait, unsigned mode, int sync,
 	return autoremove_wake_function(wait, mode, sync, key);
 }
 
-static void wake_up_page_bit(struct page *page, int bit_nr)
+void wake_up_page_bit(struct page *page, int bit_nr)
 {
 	wait_queue_head_t *q = page_waitqueue(page);
 	struct wait_page_key key;
@@ -965,6 +965,7 @@ static void wake_up_page_bit(struct page *page, int bit_nr)
 	}
 	spin_unlock_irqrestore(&q->lock, flags);
 }
+EXPORT_SYMBOL(wake_up_page_bit);
 
 static void wake_up_page(struct page *page, int bit)
 {

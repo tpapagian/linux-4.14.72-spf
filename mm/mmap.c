@@ -1699,6 +1699,9 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
 	vma->vm_flags = vm_flags;
 	vma->vm_page_prot = vm_get_page_prot(vm_flags);
 	vma->vm_pgoff = pgoff;
+	vma->is_fastmap = false;
+	vma->pve = NULL;
+	vma->pvd = NULL;
 	INIT_LIST_HEAD(&vma->anon_vma_chain);
 
 	if (file) {
